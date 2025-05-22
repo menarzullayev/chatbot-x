@@ -1,0 +1,176 @@
+#scheduleFilterForm {
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 1.5rem;
+}
+#scheduleFilterForm .form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+  width: 100%;
+  align-items: flex-end;
+}
+#scheduleFilterForm .form-group {
+  flex-grow: 1 !important;
+  flex-basis: 0 !important;
+  min-width: 250px;
+  width: auto !important;
+  max-width: none !important;
+}
+
+.group-info {
+  text-align: center;
+  font-size: 1.1em;
+  color: var(--dark);
+  margin-bottom: 1.2rem;
+  font-weight: 500;
+  background-color: #eaf2ff;
+  padding: 0.6rem 1rem;
+  border-radius: 5px;
+  border: 1px solid #caddf7;
+}
+
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+  margin-bottom: 1.5rem;
+  align-items: flex-end;
+}
+.form-group {
+  flex: 1;
+  min-width: 180px;
+}
+.form-group label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-weight: 500;
+  color: #4a5560;
+}
+.select-wrapper {
+  position: relative;
+}
+.form-group select,
+.form-select {
+  width: 100%;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid #ced4da;
+  border-radius: 5px;
+  font-size: 0.95em;
+  background-color: var(--white);
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding-right: 30px;
+  cursor: pointer;
+  transition: border-color 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
+}
+.select-wrapper::after {
+  content: "▼";
+  font-size: 11px;
+  color: #505050;
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  z-index: 1;
+}
+.form-group select:focus,
+.form-select:focus {
+  border-color: var(--primary);
+  outline: 0;
+  box-shadow: 0 0 0 0.15rem rgba(67, 97, 238, 0.2);
+}
+.form-message {
+  font-size: 0.85em;
+  color: var(--gray);
+  margin-top: 0.5rem;
+  padding-left: 3px;
+}
+
+.schedule-grid {
+  display: flex;
+  flex-direction: row;
+  overflow-x: auto;
+  gap: 1.2rem;
+  padding-bottom: 1rem;
+}
+.schedule-day {
+  background-color: #fdfdfd;
+  padding: 1.2rem;
+  border-radius: 6px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e9e9e9;
+  min-width: 280px;
+  flex-grow: 1;
+}
+.schedule-day h3 {
+  color: var(--primary-dark);
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 0.6rem;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.2em;
+}
+
+.lesson-card {
+  background-color: var(--white);
+  padding: 0.9rem;
+  margin-bottom: 0.9rem;
+  border-radius: 5px;
+  border-left: 4px solid var(--secondary);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
+}
+.lesson-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.09);
+}
+.lesson-card:last-child {
+  margin-bottom: 0;
+}
+.lesson-card p {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.9em;
+  color: #383838;
+  line-height: 1.45;
+}
+.lesson-card p strong {
+  color: var(--dark);
+  font-weight: 500;
+  margin-right: 4px;
+  display: inline-block;
+  min-width: 70px;
+}
+
+@media (max-width: 768px) {
+  #scheduleFilterForm .form-row,
+  .form-row {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  #scheduleFilterForm .form-group {
+    min-width: 100%;
+    width: 100%;
+  }
+  .schedule-grid {
+    flex-direction: column;
+    overflow-x: hidden;
+    padding-bottom: 0;
+  }
+  .schedule-day {
+    min-width: 100%;
+    margin-bottom: 1rem;
+    flex-grow: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .schedule-day h3 {
+    font-size: 1.1em;
+  }
+  .lesson-card p {
+    font-size: 0.85em;
+  }
+}

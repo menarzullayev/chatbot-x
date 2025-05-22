@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="uz">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Elektron Ta'lim{% endblock %}</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/common.css') }}"
+    />
+    {% block head_extra %}{% endblock %}
+  </head>
+  <body>
+    <div class="app-container">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <div class="user-profile">
+            {# ---- RASM UCHUN O'ZGARTIRILGAN QISM ---- #} {% if g.profil and
+            g.profil.image_url and g.profil.image_url != 'null' and
+            g.profil.image_url|length > 0 %}
+            <img
+              src="{{ g.profil.image_url }}"
+              alt="{{ g.profil.full_name or 'Profil rasmi' }}"
+              class="profile-image"
+            />
+            {% else %} {# Agar HEMISdan rasm kelmasa yoki xatolik bo'lsa,
+            standart rasm #}
+            <img
+              src="{{ url_for('static', filename='profile.jpg') }}"
+              alt="Profil rasmi"
+              class="profile-image"
+            />
+            {% endif %} {# ---- ISM VA GURUH UCHUN O'ZGARTIRILGAN QISM ---- #}
+            <div class="user-info">
+              <span class="user-name">
+                {% if g.profil and g.profil.full_name %} {{ g.profil.full_name
+                }} {% else %} {{ g.hemis_user_login or "Foydalanuvchi" }} {%
+                endif %}
+              </span>
+              {% if g.hemis_user_login and not (g.profil and
+              g.profil.group_name) %} {# Agar guruh nomi bo'lmasa ID
+              ko'rsatiladi #}
+              <span class="user-id">ID: {{ g.hemis_user_login }}</span>
+              {% elif g.profil and g.profil.group_name %}
+              <span class="user-class">{{ g.profil.group_name }}</span>
+              {% else %}
+              <span class="user-class">Noma'lum guruh</span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <nav class="sidebar-buttons">
+          <a
+            href="{{ url_for('chatbot.chatbot_sahifasi') }}"
+            class="sidebar-button {% if request.endpoint == 'chatbot.chatbot_sahifasi' %}active{% endif %}"
+          >
+            <i class="fas fa-comments"></i> Chatbot
+          </a>
+          <a
+            href="{{ url_for('dars_jadvali_route') }}"
+            class="sidebar-button {% if request.endpoint == 'dars_jadvali_route' %}active{% endif %}"
+          >
+            <i class="fas fa-calendar-alt"></i> Dars Jadvali
+          </a>
+          <a
+            href="{{ url_for('topshiriqlar_route') }}"
+            class="sidebar-button {% if request.endpoint == 'topshiriqlar_route' %}active{% endif %}"
+          >
+            <i class="fas fa-tasks"></i> Topshiriqlar
+          </a>
+          <a
+            href="{{ url_for('davomat_route') }}"
+            class="sidebar-button {% if request.endpoint == 'davomat_route' %}active{% endif %}"
+          >
+            <i class="fas fa-user-check"></i> Davomat
+          </a>
+          <a
+            href="{{ url_for('mening_malumotlarim_route') }}"
+            class="sidebar-button {% if request.endpoint == 'mening_malumotlarim_route' %}active{% endif %}"
+          >
+            <i class="fas fa-user-circle"></i> Mening ma'lumotlarim
+          </a>
+        </nav>
+
+        <a href="{{ url_for('logout') }}" class="sidebar-button logout-button">
+          <i class="fas fa-sign-out-alt"></i> Chiqish
+        </a>
+
+        <div class="sidebar-footer">
+          <div class="current-date-container">
+            <i class="fas fa-calendar-day"></i>
+            <span id="current-date">Yuklanmoqda...</span>
+          </div>
+          <div class="current-time-container">
+            <i class="fas fa-clock"></i>
+            <span id="current-time">Yuklanmoqda...</span>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main-content">
+        {% with messages = get_flashed_messages(with_categories=true) %} {% if
+        messages %}
+        <div class="flash-messages-main container-fluid mt-3">
+          {% for category, message in messages %}
+          <div
+            class="alert alert-{{ category }} alert-dismissible fade show"
+            role="alert"
+          >
+            {{ message }}
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="alert"
+              aria-label="Yopish"
+            ></button>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %} {% endwith %} {% block content %}{% endblock %}
+      </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/common.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    {% block scripts_extra %}{% endblock %}
+  </body>
+</html>

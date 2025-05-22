@@ -1,0 +1,129 @@
+{% extends "base_template.html" %} {% block title %}Elektron Ta'lim Chatbot{%
+endblock %} {% block head_extra %} {{ super() }}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/chatbot.css') }}"
+/>
+{% endblock %} {% block content %}
+<div class="chat-container">
+  <header class="chat-header">
+    <h1>
+      <i class="fas fa-robot"></i>
+      Elektron Ta'lim Chatbot
+    </h1>
+    <button
+      id="clear-history"
+      class="clear-history"
+      title="Suhbat tarixini tozalash"
+    >
+      <i class="fas fa-trash-alt"></i>
+      <span>Tarixni tozalash</span>
+    </button>
+  </header>
+
+  <div class="chat-messages" id="chat-messages">
+    {% for xabar_item in suhbat_tarixi %}
+    <div class="message {{ xabar_item.tur }}">
+      <div class="message-content">
+        <div class="message-text">
+          {% autoescape false %} {{ xabar_item.xabar_html }} {% endautoescape %}
+        </div>
+        {% if xabar_item.fayllar %}
+        <div class="message-files">
+          {% for saqlangan_fayl_nomi in xabar_item.fayllar %} {% set
+          korsatish_nomi = saqlangan_fayl_nomi %} {% set nom_qismlari =
+          saqlangan_fayl_nomi.rsplit('_', 1) %} {% if nom_qismlari|length == 2
+          %} {% set asosiy_nom_qismi = nom_qismlari[0] %} {% set
+          uuid_va_kengaytma = nom_qismlari[1] %} {% set kengaytma_qismlari =
+          uuid_va_kengaytma.split('.', 1) %} {% if kengaytma_qismlari|length ==
+          2 %} {% set kengaytma = kengaytma_qismlari[-1] %} {% set
+          korsatish_nomi = asosiy_nom_qismi + '.' + kengaytma %} {% else %} {%
+          set korsatish_nomi = asosiy_nom_qismi %} {% endif %} {% endif %}
+          <div class="message-file">
+            <span class="file-icon"><i class="fas fa-file"></i></span>
+            <span class="file-name" title="{{ korsatish_nomi }}"
+              >{{ korsatish_nomi }}</span
+            >
+            <a
+              href="{{ url_for('yuklangan_fayl_route', fayl_nomi=saqlangan_fayl_nomi) }}"
+              download="{{ korsatish_nomi }}"
+              title="Yuklab olish"
+            >
+              <i class="fas fa-download"></i>
+            </a>
+            {% set ext = korsatish_nomi.rsplit('.', 1)[-1].lower() if '.' in
+            korsatish_nomi else '' %} {% if ext in ['png', 'jpg', 'jpeg', 'gif',
+            'webp'] %}
+            <img
+              src="{{ url_for('yuklangan_fayl_route', fayl_nomi=saqlangan_fayl_nomi) }}"
+              alt="{{ korsatish_nomi }}"
+              loading="lazy"
+            />
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+        <div class="message-time">{{ xabar_item.vaqt_str }}</div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="chat-input-container">
+    <div
+      class="uploaded-files-container"
+      id="uploaded-files"
+      style="display: none"
+    ></div>
+    <form class="chat-input" id="chat-form" enctype="multipart/form-data">
+      <label
+        for="file-input"
+        class="file-label chat-tool-button"
+        {#
+        Umumiy
+        class
+        qoshildi
+        #}
+        id="file-label-icon"
+        title="Fayl biriktirish"
+      >
+        <i class="fas fa-paperclip"></i>
+      </label>
+      <input type="file" id="file-input" class="file-input" multiple />
+
+      {# ---- YANGI EMOJI TUGMASI ---- #}
+      <button
+        type="button"
+        id="emoji-btn"
+        class="chat-tool-button emoji-button"
+        title="Emoji tanlash"
+      >
+        <i class="fas fa-smile"></i>
+      </button>
+      {# ---- /YANGI EMOJI TUGMASI ---- #}
+
+      <textarea
+        id="message-input"
+        placeholder="Xabaringizni yozing..."
+        rows="1"
+      ></textarea>
+      <button
+        type="submit"
+        class="chat-tool-button send-button"
+        title="Yuborish"
+      >
+        {# Umumiy class qo'shildi #}
+        <i class="fas fa-paper-plane"></i>
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %} {% block scripts_extra %} {{ super() }} {# ---- EMOJI PICKER
+KUTUBXONASINI ULASH ---- #}
+<script
+  type="module"
+  src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"
+></script>
+<script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
+{% endblock %}

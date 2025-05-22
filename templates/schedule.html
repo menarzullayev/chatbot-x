@@ -1,0 +1,140 @@
+{% extends "base_template.html" %}
+
+{% block title %}{{ title|default("Dars Jadvali") }}{% endblock %}
+
+{% block head_extra %}
+    {{ super() }}
+    <script>
+      window.scheduleUrls = {
+        scheduleRoute: "{{ url_for('dars_jadvali_route') }}"
+      };
+    </script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/schedule.css') }}">
+{% endblock %}
+
+{# ... qolgan qismi (macro, content bloki) avvalgi javobdagidek, faqat select lardan onchange olib tashlanadi ... #}
+{% macro weekday_name_uz(weekday_idx_param, hafta_kunlari_uz_dict_param) %}
+  {{ hafta_kunlari_uz_dict_param.get(weekday_idx_param, "Noma'lum kun") }}
+{% endmacro %}
+
+{% block content %}
+    <div class="schedule-page-content-wrapper container">
+        
+        <h1 class="page-main-title"><i class="fas fa-calendar-alt"></i> {{ title|default("Dars Jadvali") }}</h1> 
+        
+        {% if group_id_display %}
+            <p class="group-info"><strong>Guruh:</strong> {{ group_id_display }}</p>
+        {% endif %}
+
+        {% if messages and (messages.errors or messages.warnings or messages.successes or messages.infos) %}
+        <div class="messages-container mt-3 mb-3">
+            {% if messages.errors %}
+                <div class="alert alert-danger" role="alert">
+                    <strong>Xatoliklar:</strong>
+                    <ul>{% for error in messages.errors %}<li>{{ error }}</li>{% endfor %}</ul>
+                </div>
+            {% endif %}
+            {% if messages.warnings %}
+                <div class="alert alert-warning" role="alert">
+                    <strong>Ogohlantirishlar:</strong>
+                    <ul>{% for warning in messages.warnings %}<li>{{ warning }}</li>{% endfor %}</ul>
+                </div>
+            {% endif %}
+            {% if messages.successes %}
+                <div class="alert alert-success" role="alert">
+                    <strong>Muvaffaqiyatli:</strong>
+                    <ul>{% for success in messages.successes %}<li>{{ success }}</li>{% endfor %}</ul>
+                </div>
+            {% endif %}
+            {% if messages.infos %}
+                <div class="alert alert-info" role="alert">
+                    <strong>Ma'lumot:</strong>
+                    <ul>{% for info in messages.infos %}<li>{{ info }}</li>{% endfor %}</ul>
+                </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <form method="GET" action="{{ url_for('dars_jadvali_route') }}" id="scheduleFilterForm" class="mb-4">
+            <div class="form-row align-items-end">
+                <div class="form-group col-md-5 mb-2">
+                    <label for="semester_id">Semestrni tanlang:</label>
+                    <div class="select-wrapper">
+                        <select name="semester_id" id="semester_id" class="form-select"> {# onchange OLIB TASHLANDI #}
+                            <option value="">-- Semestrni tanlang --</option>
+                            {% for semester in semesters %}
+                                <option value="{{ semester.id }}" {% if semester.id|string == selected_semester_id|string %}selected{% endif %}>
+                                    {{ semester.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                {% if selected_semester_id and weeks %}
+                <div class="form-group col-md-5 mb-2">
+                    <label for="week_id">Haftani tanlang:</label>
+                    <div class="select-wrapper">
+                        <select name="week_id" id="week_id" class="form-select"> {# onchange OLIB TASHLANDI #}
+                            <option value="">-- Haftani tanlang --</option>
+                            {% for week in weeks %}
+                                <option value="{{ week.id }}" {% if week.id == selected_week_id %}selected{% endif %}>
+                                    {{ week.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                {% elif selected_semester_id and not weeks and not messages.errors %}
+                 <div class="form-group col-md-5 mb-2">
+                    <p class="form-text text-muted">Tanlangan semestr uchun haftalar topilmadi yoki yuklanmoqda...</p>
+                </div>
+                {% endif %}
+            </div>
+        </form>
+        
+        {% if schedule_data %}
+            <div class="schedule-grid">
+                {% for day_data in schedule_data %}
+                    {% if day_data.lessons %} 
+                        <div class="schedule-day">
+                            <h3>{{ weekday_name_uz(day_data.weekday_idx, hafta_kunlari_uz) }} ({{ day_data.date_str }})</h3>
+                            {% for lesson_info in day_data.lessons %} 
+                                <div class="lesson-card">
+                                    <p>
+                                        <strong>Vaqti:</strong> 
+                                        {{ lesson_info.lessonPair.startTime if lesson_info.lessonPair and lesson_info.lessonPair.startTime else "N/A" }} - 
+                                        {{ lesson_info.lessonPair.endTime if lesson_info.lessonPair and lesson_info.lessonPair.endTime else "N/A" }}
+                                    </p>
+                                    <p><strong>Fan:</strong> {{ lesson_info.subject.name if lesson_info.subject and lesson_info.subject.name else "Noma'lum" }}</p>
+                                    <p><strong>O'qituvchi:</strong> {{ lesson_info.employee.name if lesson_info.employee and lesson_info.employee.name else "Noma'lum" }}</p>
+                                    <p><strong>Xona:</strong> {{ lesson_info.auditorium.name if lesson_info.auditorium and lesson_info.auditorium.name else "Noma'lum" }}</p>
+                                    <p><strong>Dars Turi:</strong> {{ lesson_info.trainingType.name if lesson_info.trainingType and lesson_info.trainingType.name else "Noma'lum" }}</p>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% elif selected_semester_id and weeks and not selected_week_id and not messages.errors %}
+            <div class="alert alert-info" role="alert">Iltimos, yuqoridagi ro'yxatdan haftani tanlang.</div>
+        {% elif selected_semester_id and selected_week_id and not schedule_data and not messages.errors and not (messages.infos and "uchun dars jadvali bo'sh." in messages.infos|join(' ')) %}
+            <div class="alert alert-info" role="alert">Tanlangan hafta uchun dars jadvali topilmadi yoki bo'sh.</div>
+        {% elif not selected_semester_id and semesters %} 
+             <div class="alert alert-info" role="alert">Iltimos, avval semestrni tanlang.</div>
+        {% elif not semesters and not messages.errors %}
+             <div class="alert alert-warning" role="alert">Semestrlar ro'yxati topilmadi. API bilan bog'liq muammo bo'lishi mumkin.</div>
+        {% endif %}
+        
+        {% if not schedule_data and not messages.errors and not messages.warnings and not messages.infos and selected_semester_id and selected_week_id %}
+            <div class="alert alert-secondary mt-3" role="alert">
+              Tanlangan mezonlar bo'yicha dars jadvalida ma'lumotlar mavjud emas.
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block scripts_extra %}
+    {{ super() }}
+    <script src="{{ url_for('static', filename='js/schedule.js') }}"></script>
+{% endblock %}

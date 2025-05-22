@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="uz">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ title or "Tizimga Kirish" }} - Elektron Ta'lim</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    {# Eski style.css izohda qoldirilgan, to'g'ri #}
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/common.css') }}" {# TOGRILANDI #}
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/login.css') }}" {# TOGRILANDI #}
+    />
+  </head>
+  <body class="login-page-body">
+    <div class="login-container">
+      <div class="login-header">
+        <h1>Elektron Ta'lim Tizimi</h1>
+        <p>HEMIS akkauntingiz bilan tizimga kiring</p>
+      </div>
+
+      {% with messages = get_flashed_messages(with_categories=true) %} {% if
+      messages %}
+      <div class="login-flash-messages">
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+      {% endif %} {% endwith %}
+
+      <form
+        method="POST"
+        action="{{ url_for('login', next=request.args.get('next')) }}"
+      >
+        <div class="login-form-group">
+          <label for="hemis_login">Login (HEMIS ID)</label>
+          <input
+            type="text"
+            id="hemis_login"
+            name="hemis_login"
+            class="login-form-control"
+            value="{{ hemis_login or '' }}"
+            required
+            autofocus
+          />
+        </div>
+        <div class="login-form-group">
+          <label for="hemis_password">Parol</label>
+          <input
+            type="password"
+            id="hemis_password"
+            name="hemis_password"
+            class="login-form-control"
+            required
+          />
+        </div>
+        <button type="submit" class="btn-login">Kirish</button>
+      </form>
+    </div>
+    {# <script src="{{ url_for('static', filename='js/login.js') }}"></script> #}
+  </body>
+</html>

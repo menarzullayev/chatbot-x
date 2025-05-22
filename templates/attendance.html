@@ -1,0 +1,120 @@
+{% extends "base_template.html" %} {% block title %}Davomat{% endblock %} {%
+block head_extra %} {{ super() }}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/attendance.css') }}"
+/>
+{% endblock %} {% block content %} {# ... attendance.html mazmuni (avvalgi
+javobdagidek, style tegisiz) ... #}
+<div class="container">
+  <h1><i class="fas fa-user-check"></i> Davomat</h1>
+
+  {% if initial_error %}
+  <div
+    class="alert alert-warning"
+    role="alert"
+    style="
+      background-color: #fff3cd;
+      border-color: #ffeeba;
+      color: #856404;
+      padding: 0.75rem 1.25rem;
+      margin-bottom: 1rem;
+      border: 1px solid transparent;
+      border-radius: 0.25rem;
+    "
+  >
+    <strong>Diqqat:</strong> {{ initial_error }}
+  </div>
+  {% endif %}
+
+  <div class="controls-container">
+    <div class="control-group">
+      <label for="semesterFilterHemis">Semestrni tanlang:</label>
+      <select id="semesterFilterHemis" class="form-select">
+        <option value="all">Barcha Semestrlar</option>
+      </select>
+    </div>
+    <div class="control-group">
+      <label for="viewToggleHemis">Ko'rinish:</label>
+      <select id="viewToggleHemis" class="form-select">
+        <option value="cards">Kartochkalar</option>
+        <option value="table">Jadval</option>
+      </select>
+    </div>
+  </div>
+
+  <div id="loadingMessageHemis" class="loading-message-container hidden">
+    <svg
+      class="animate-spin"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+    >
+      <circle
+        class="opacity-25"
+        cx="12"
+        cy="12"
+        r="10"
+        stroke="currentColor"
+        stroke-width="4"
+      ></circle>
+      <path
+        class="opacity-75"
+        fill="currentColor"
+        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+      ></path>
+    </svg>
+    <h3>Yuklanmoqda...</h3>
+    <p>Iltimos kuting, ma'lumotlar HEMIS tizimidan olinmoqda.</p>
+  </div>
+
+  <div id="noDataMessageHemis" class="no-data-message hidden">
+    <svg
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      aria-hidden="true"
+    >
+      <path
+        vector-effect="non-scaling-stroke"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"
+      />
+    </svg>
+    <h3>Ma'lumotlar topilmadi</h3>
+    <p>
+      Tanlangan semestr uchun davomat ma'lumotlari mavjud emas yoki
+      ma'lumotlarni yuklashda xatolik yuz berdi.
+    </p>
+  </div>
+
+  <div
+    id="attendanceStatsHemisContainer"
+    class="attendance-stats"
+    style="margin-top: 1.5rem"
+  ></div>
+
+  <div id="attendanceCardsContainerHemis" class="card-grid"></div>
+
+  <div id="attendanceTableContainerHemis" class="table-container hidden">
+    <table class="attendance-table">
+      <thead>
+        <tr>
+          <th>Fan Nomi</th>
+          <th>Semestr</th>
+          <th>Mashg'ulot Turi</th>
+          <th>Dars Vaqti</th>
+          <th>O'qituvchi</th>
+          <th>Dars Sanasi</th>
+          <th>Holat</th>
+        </tr>
+      </thead>
+      <tbody id="attendanceTableBodyHemis"></tbody>
+    </table>
+  </div>
+</div>
+{% endblock %} {% block scripts_extra %} {{ super() }}
+<script src="{{ url_for('static', filename='js/attendance.js') }}"></script>
+{% endblock %}
